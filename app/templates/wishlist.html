@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}My Wishlist{% endblock %}
+
+{% block content %}
+<h2>My Wishlist</h2>
+{% if wishlist_items %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in wishlist_items %}
+            <tr>
+                <td>{{ item.wishlist_product.name }}</td>
+                <td>₹{{ item.wishlist_product.price }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>
+                    <form action="{{ url_for('views.wishlist_remove', wishlist_id=item.id) }}" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">-</button>
+                    </form>
+                    <form action="{{ url_for('views.wishlist_add', product_id=item.product_id) }}" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-success btn-sm">+</button>
+                    </form>
+                    <form action="{{ url_for('views.cart_add', product_id=item.product_id) }}" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-primary btn-sm">Move to Cart</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('views.homepage') }}" class="btn btn-primary">Continue Shopping</a>
+{% else %}
+    <p>Your wishlist is empty.</p>
+    <a href="{{ url_for('views.homepage') }}" class="btn btn-primary">Go to Home</a>
+{% endif %}
+{% endblock %}

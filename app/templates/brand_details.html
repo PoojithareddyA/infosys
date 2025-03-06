@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ brand.name }} - Brand Info{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-3">{{ brand.name }}</h2>
+    <div class="brand-logo text-center mb-4">
+        <img src="{{ url_for('static', filename=brand.logo) }}" alt="{{ brand.name }}" class="img-fluid" style="max-width: 100px;">
+    </div>
+    <p class="text-muted">{{ brand.description }}</p>
+
+    <h3 class="mt-4">Products</h3>
+    <div class="row">
+        {% for product in products %}
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <img src="{{ url_for('static', filename=product.image_file) }}" class="card-img-top" alt="{{ product.name }}">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">₹{{ product.price }}</p>
+                    <p class="card-text">₹{{ product.description }}</p>
+                    <a href="{{ url_for('views.product_info', product_id=product.id) }}" class="btn btn-info btn-sm">View Details</a>
+                    <form action="{{ url_for('views.cart_add', product_id=product.id) }}" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
+                    </form>
+                    <form action="{{ url_for('views.wishlist_add', product_id=product.id) }}" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-warning btn-sm">Add to Wishlist</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <a href="{{ url_for('views.homepage') }}" class="btn btn-primary" >Back to Home</a>
+</div>
+{% endblock %}
+
+
+
