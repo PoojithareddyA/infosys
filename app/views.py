@@ -47,31 +47,59 @@ def cart_remove(cart_id):
 @views.route('/cart')
 def show_cart():
     cart_list = Cart.query.all()
-    return render_template('cart.html', cart_items=cart_list)
+    total_mrp = sum(item.cart_product.price * item.quantity for item in cart_list)
+    discount_mrp = total_mrp * 0.56  # Assuming 56% discount as per the image
+    total_amount = total_mrp - discount_mrp
+
+    return render_template(
+        'cart.html',
+        cart_items=cart_list,
+        total_mrp=total_mrp,
+        discount_mrp=discount_mrp,
+        total_amount=total_amount
+    )
 
 @views.route('/add_to_wishlist/<int:product_id>', methods=['POST'])
 def wishlist_add(product_id):
     product_data = Product.query.get_or_404(product_id)
     wishlist_item = Wishlist.query.filter_by(product_id=product_id).first()
-    if wishlist_item:
-        wishlist_item.quantity += 1
-    else:
-        new_wishlist_entry = Wishlist(product_id=product_data.id, quantity=1)
+    if not wishlist_item:
+        new_wishlist_entry = Wishlist(product_id=product_data.id)
         db.session.add(new_wishlist_entry)
     db.session.commit()
     return redirect(url_for('views.show_wishlist'))
 
+@views.route('/move_to_wishlist/<int:cart_id>', methods=['POST'])
+def move_to_wishlist(cart_id):
+    # Get the cart item
+    cart_item = Cart.query.get_or_404(cart_id)
+    
+    # Check if the product is already in the wishlist
+    wishlist_item = Wishlist.query.filter_by(product_id=cart_item.product_id).first()
+    
+    if not wishlist_item:
+        # Add the product to the wishlist
+        new_wishlist_item = Wishlist(product_id=cart_item.product_id)
+        db.session.add(new_wishlist_item)
+    
+    # Remove the product from the cart
+    db.session.delete(cart_item)
+    db.session.commit()
+    
+    return redirect(url_for('views.show_cart'))
+
 @views.route('/remove_from_wishlist/<int:wishlist_id>', methods=['POST'])
 def wishlist_remove(wishlist_id):
     wishlist_entry = Wishlist.query.get_or_404(wishlist_id)
-    if wishlist_entry.quantity > 1:
-        wishlist_entry.quantity -= 1
-    else:
-        db.session.delete(wishlist_entry)
+    db.session.delete(wishlist_entry)
     db.session.commit()
     return redirect(url_for('views.show_wishlist'))
 
 @views.route('/wishlist')
 def show_wishlist():
-    wishlist_list = Wishlist.query.all()
+    wishlist_list = (
+        db.session.query(Wishlist.id, Product.name, Product.price, Product.image_file, Product.id.label("product_id"))
+        .join(Product, Wishlist.product_id == Product.id)
+        .all()
+    )
     return render_template('wishlist.html', wishlist_items=wishlist_list)
