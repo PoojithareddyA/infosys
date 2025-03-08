@@ -1,136 +1,62 @@
 {% extends 'base.html' %}
-
-{% block title %}Shopping Cart{% endblock %}
-
 {% block content %}
-<div class="container">
+<div class="container mt-4">
+    <h4 class="mb-3"> 🛒  <strong>{{ cart_items|length }}/{{ cart_items|length }} ITEMS SELECTED</strong></h4>
+
     <div class="row">
-        <!-- Left Column: Cart Items -->
+        <!-- Left Side: Cart Items -->
         <div class="col-md-8">
-            <!-- Deliver to Section -->
-            <div class="deliver-to-section mb-4 p-3 bg-light border rounded">
-                <h5>Deliver to: <strong>Mayur Kadam, 425001</strong></h5>
-                <p class="text-muted">Meharun Leak Near, Ganesh Ghat, Kavira Group, Jalgaon</p>
-                <a href="#" class="btn btn-link p-0">CHANGE ADDRESS</a>
-            </div>
+            {% for item in cart_items %}
+            <div class="card mb-3 p-3 shadow-sm">
+                <div class="row g-0">
+                    <div class="col-md-3">
+                        <img src="{{ url_for('static', filename=item.image_file) }}" class="card-img-top fixed-image" alt="{{ item.name }}">
+                    </div>
+                    <div class="col-md-9">
+                        <div class="card-body">
+                            <h6 class="card-title text-truncate">{{ item.name }}</h6>
+                            <p class="card-text">Sold by: <strong>Brand Name</strong></p>
+                            <div class="d-flex">
+                                <label class="me-2">Size:</label>
+                                <select class="form-select form-select-sm me-3" style="width: auto;">
+                                    <option {% if item.size=='S' %}selected{% endif %}>S</option>
+                                    <option {% if item.size=='M' %}selected{% endif %}>M</option>
+                                    <option {% if item.size=='L' %}selected{% endif %}>L</option>
+                                    <option {% if item.size=='XL' %}selected{% endif %}>XL</option>
+                                </select>
 
-            <!-- Available Offers Section -->
-            <div class="offers-section mb-4 p-3 bg-light border rounded">
-                <h5>Available Offers</h5>
-                <ul class="list-unstyled">
-                    <li class="text-success">10% Instant Discount on Axis Bank Credit Card and Credit Card EMI on a min spend of ₹3,500. TCA</li>
-                </ul>
-                <a href="#" class="btn btn-link p-0">Show More</a>
-            </div>
-
-            <!-- Items Selected Section -->
-            <div class="items-selected-section mb-4">
-                <h5>{{ cart_items|length }}/{{ cart_items|length }} ITEMS SELECTED</h5>
-                <div class="row">
-                    {% for item in cart_items %}
-                    <div class="col-md-12 mb-3">
-                        <div class="card p-3">
-                            <div class="card-body p-0">
-                                <!-- Product Name and Seller -->
-                                <h5 class="card-title">{{ item.cart_product.name }}</h5>
-                                <p class="card-text text-muted">Sold by: {{ item.cart_product.brand.name }}</p>
-
-                                <!-- Size and Quantity -->
-                                <p class="card-text">
-                                    <strong>Size:</strong> S
-                                    <strong>Qty:</strong> {{ item.quantity }}
-                                </p>
-
-                                <!-- Price and Discount -->
-                                <p class="card-text">
-                                    <strong>₹{{ item.cart_product.price * item.quantity }}</strong>
-                                    <del class="text-muted">₹{{ item.cart_product.price * 2 }}</del>
-                                    <span class="text-success">₹970 OFF</span>
-                                </p>
-
-                                <!-- Return Policy and Delivery Date -->
-                                <p class="card-text text-success">☉ 14 days return available</p>
-                                <p class="card-text text-success">✔ Delivery by 20 Mar 2025</p>
-
-                                <!-- Action Buttons -->
-                                <div class="d-flex gap-2">
-                                    <form action="{{ url_for('views.cart_remove', cart_id=item.id) }}" method="POST" class="d-inline">
-                                        <button type="submit" class="btn btn-danger btn-sm">REMOVE</button>
-                                    </form>
-                                    <form action="{{ url_for('views.move_to_wishlist', cart_id=item.id) }}" method="POST" class="d-inline">
-                                        <button type="submit" class="btn btn-outline-secondary btn-sm">MOVE TO WISHLIST</button>
-                                    </form>
-                                </div>
+                                <label class="me-2">Qty:</label>
+                                <select class="form-select form-select-sm" style="width: auto;">
+                                    {% for i in range(1, 6) %}
+                                    <option {% if item.quantity==i %}selected{% endif %}>{{ i }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
+                            <p class="fw-bold text-danger">Rs.{{ item.price }}</p> 
+                                  
+                        
+                            </p>
+                            
+
+                            <button class="btn btn-outline-danger btn-sm">Remove</button>
+                            <button class="btn btn-outline-dark btn-sm">Move to Wishlist</button>
                         </div>
                     </div>
-                    {% endfor %}
-                </div>
-
-                <!-- Add More From Wishlist -->
-                <div class="text-center mt-4">
-                    <a href="{{ url_for('views.show_wishlist') }}" class="btn btn-outline-primary">Add More From Wishlist</a>
                 </div>
             </div>
+            {% endfor %}
         </div>
 
-        <!-- Right Column: Sidebar Sections -->
+        <!-- Right Side: Price Summary -->
         <div class="col-md-4">
-            <!-- Coupons Section -->
-            <div class="coupons-section mb-4 p-3 bg-light border rounded">
-                <h5>COUPONS</h5>
-                <button class="btn btn-outline-primary btn-sm w-100">Apply Coupons</button>
-            </div>
-
-            <!-- Support Social Work Section -->
-            <div class="social-work-section mb-4 p-3 bg-light border rounded">
-                <h5>SUPPORT TRANSFORMATIVE SOCIAL WORK IN INDIA</h5>
-                <p class="text-muted">Donate and make a difference</p>
-                <div class="btn-group w-100">
-                    <button class="btn btn-outline-success btn-sm">₹10</button>
-                    <button class="btn btn-outline-success btn-sm">₹20</button>
-                    <button class="btn btn-outline-success btn-sm">₹50</button>
-                    <button class="btn btn-outline-success btn-sm">₹100</button>
-                </div>
-                <a href="#" class="btn btn-link p-0 d-block mt-2">Know More</a>
-            </div>
-
-            <!-- Price Details Section -->
-            <div class="price-details-section mb-4 p-3 bg-light border rounded">
-                <h5>PRICE DETAILS ({{ cart_items|length }} Item)</h5>
-                <table class="table">
-                    <tbody>
-                        <tr>
-                            <td>Total MRP</td>
-                            <td>₹{{ total_mrp }}</td>
-                        </tr>
-                        <tr>
-                            <td>Discount on MRP</td>
-                            <td class="text-success">- ₹{{ discount_mrp }}</td>
-                        </tr>
-                        <tr>
-                            <td>Coupon Discount</td>
-                            <td><a href="#" class="btn btn-link p-0">Apply Coupon</a></td>
-                        </tr>
-                        <tr>
-                            <td>Platform Fee</td>
-                            <td>FREE</td>
-                        </tr>
-                        <tr>
-                            <td>Shipping Fee</td>
-                            <td>FREE</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Total Amount</strong></td>
-                            <td><strong>₹{{ total_amount }}</strong></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Place Order Button -->
-            <div class="text-center">
-                <button class="btn btn-primary w-100">PLACE ORDER</button>
+            <div class="card p-3 shadow-sm">
+                <h5 class="mb-3">PRICE DETAILS ({{ cart_items|length }} Items)</h5>
+                <p class="d-flex justify-content-between"><span>Total MRP</span> <span>₹{{ total_mrp }}</span></p>
+                <p class="d-flex justify-content-between text-success"><span>Discount</span> <span>-₹{{ total_discount }}</span></p>
+                <p class="d-flex justify-content-between"><span>Shipping Fee</span> <span class="text-success">FREE</span></p>
+                <hr>
+                <h5 class="d-flex justify-content-between"><strong>Total</strong> <strong>₹{{ final_price }}</strong></h5>
+                <button class="btn btn-danger btn-lg mt-3 w-100">Place Order</button>
             </div>
         </div>
     </div>

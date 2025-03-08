@@ -1,21 +1,25 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<div class="container mt-5">
-    <h2 class="fw-bold">My <span class="text-primary">Wishlist</span> {{ wishlist_items|length }} items</h2>
-    <div class="row">
+<div class="container mt-5 container ">
+    <h2 class="fw-bold text-center">My <span class="text-primary">Wishlist</span> {{ wishlist_items|length }} items</h2>
+
+    <!-- Ensure proper spacing between cards -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mt-3">
         {% for item in wishlist_items %}
-        <div class="col-md-3 col-sm-6 mb-4">
-            <div class="card shadow-sm border-0">
+        <div class="col d-flex justify-content-center">
+            <div class="card shadow-sm border-0" style="width: 18rem;">
                 <div class="position-relative">
-                    <img src="{{ url_for('static', filename=item.image_file) }}" class="card-img-top" alt="{{ item.name }}">
+                    <img src="{{ url_for('static', filename=item.image_file) }}" class="card-img-top fixed-image" alt="{{ item.name }}">
                     <button class="btn btn-light position-absolute top-0 end-0 m-2" onclick="removeFromWishlist({{ item.id }})">&times;</button>
                 </div>
                 <div class="card-body text-center">
                     <h6 class="card-title text-truncate">{{ item.name }}</h6>
-                    <p class="fw-bold text-danger">Rs.{{ item.price }}</p>
+                    <p style="background-color: #C4877A; color: white;" >Rs.{{ item.price }}</p>
                     <a href="{{ url_for('views.product_info', product_id=item.product_id) }}" class="btn btn-outline-dark btn-sm">View Details</a>
                     <form action="{{ url_for('views.cart_add', product_id=item.product_id) }}" method="post" class="d-inline">
-                        <button type="submit" class="btn btn-danger btn-sm">Move to Bag</button>
+                        <button type="submit" class="btn btn-sm" style="background-color: #C4877A; color: white;">Move to Bag</button>
+
                     </form>
                 </div>
             </div>
@@ -31,4 +35,30 @@
         }).then(() => window.location.reload());
     }
 </script>
+
+<style>
+    .fixed-image {
+        width: 100%;
+        height: 250px; /* Consistent image height */
+        object-fit: cover;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+    }
+
+    .card {
+        border-radius: 10px;
+        transition: transform 0.2s ease-in-out;
+        margin: 30px;
+        
+    }
+
+    .card:hover {
+        transform: scale(1.02);
+    }
+
+    .container{
+        gap: 80px;
+    }
+</style>
+
 {% endblock %}
