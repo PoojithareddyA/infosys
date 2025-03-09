@@ -105,3 +105,18 @@ def show_wishlist():
         .all()
     )
     return render_template('wishlist.html', wishlist_items=wishlist_list)
+
+@views.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('query', '').strip()
+    if query:
+        search_results = Product.query.join(Brand).filter(
+            (Product.product_name.ilike(f"%{query}%")) |
+            (Product.category.ilike(f"%{query}%")) |
+            (Product.description.ilike(f"%{query}%")) |
+            (Brand.name.ilike(f"%{query}%"))
+        ).all()
+    else:
+        search_results = []
+    
+    return render_template('search_results.html', products=search_results, query=query)
