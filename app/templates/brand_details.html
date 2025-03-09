@@ -3,39 +3,91 @@
 {% block title %}{{ brand.name }} - Brand Info{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2 class="mb-3">{{ brand.name }}</h2>
-    <div class="brand-logo text-center mb-4">
-        <img src="{{ url_for('static', filename=brand.logo) }}" alt="{{ brand.name }}" class="img-fluid" style="max-width: 100px;">
+<div class="container py-5">
+    <!-- Brand Header -->
+    <div class="text-center mb-4">
+        
+        <img src="{{ url_for('static', filename=brand.logo) }}" alt="{{ brand.name }}" class="brand-logo mx-3" style="max-width: 80px;">
+        
     </div>
-    <p class="text-muted">{{ brand.description }}</p>
 
-    <h3 class="mt-4">Products</h3>
-    <div class="row">
+    <!-- Product Cards (5 per row) -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-5 g-4">
         {% for product in products %}
-        <div class="col-md-4">
-            <div class="card mb-4 shadow-sm">
-                <img src="{{ url_for('static', filename=product.image_file) }}" class="card-img-top" alt="{{ product.name }}">
+        <div class="col">
+            <div class="card product-card shadow-sm border-0 p-3">
+                <!-- Wishlist Button (Top-Right) -->
+                <form action="{{ url_for('views.wishlist_add', product_id=product.id) }}" method="POST">
+                    <button type="submit" class="btn btn-outline-danger btn-sm wishlist-btn">
+                        ❤️
+                    </button>
+                </form>
+
+                <!-- Product Image -->
+                <img src="{{ url_for('static', filename=product.product_picture) }}" class="card-img-top product-img" alt="{{ product.product_name }}">
+                
+                <!-- Product Details -->
                 <div class="card-body text-center">
-                    <h5 class="card-title">{{ product.name }}</h5>
-                    <p class="card-text">₹{{ product.price }}</p>
-                    <p class="card-text">₹{{ product.description }}</p>
-                    <a href="{{ url_for('views.product_info', product_id=product.id) }}" class="btn btn-info btn-sm">View Details</a>
-                    <form action="{{ url_for('views.cart_add', product_id=product.id) }}" method="POST" class="d-inline">
-                        <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
-                    </form>
-                    <form action="{{ url_for('views.wishlist_add', product_id=product.id) }}" method="POST" class="d-inline">
-                        <button type="submit" class="btn btn-warning btn-sm">Add to Wishlist</button>
-                    </form>
+                    <h6 class="card-title fw-bold">{{ product.product_name }}</h6>
+                    <p class="text-muted small">{{ product.description[:50] }}...</p>
+                    <p class="text-danger fw-bold">
+                        <span class="text-muted small"><s>₹{{ product.old_price }}</s></span> 
+                        ₹{{ product.current_price }}
+                    </p>
+
+                    <!-- Action Buttons with Proper Spacing -->
+                    <div class="d-flex justify-content-between gap-2 mt-3">
+                        <form action="{{ url_for('views.cart_add', product_id=product.id) }}" method="POST" style="background-color: #C4877A; color: white;">
+                            <button type="submit">Add to Cart</button>
+                        </form>
+                        <a href="{{ url_for('views.product_info', product_id=product.id) }}" style="background-color: #C4877A; color: white;">View Details</a>
+                    </div>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
 
-    <a href="{{ url_for('views.homepage') }}" class="btn btn-primary" >Back to Home</a>
+    <!-- Back to Home Button -->
+    <div class="text-center mt-5">
+        <a href="{{ url_for('views.homepage') }}" class="btn btn-lg btn-primary">Back to Home</a>
+    </div>
 </div>
+
+<!-- Custom CSS -->
+<style>
+    body {
+        background: #f8f9fa;
+    }
+    .brand-logo {
+        vertical-align: middle;
+    }
+    .product-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        padding: 10px;
+    }
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    .wishlist-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: white;
+        border-radius: 50%;
+        padding: 5px 8px;
+    }
+    .product-img {
+        height: 180px;
+        object-fit: contain;
+    }
+    .gap-2 {
+        gap: 10px !important;
+    }
+</style>
+
 {% endblock %}
-
-
-

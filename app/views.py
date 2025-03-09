@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 from app.models import Product, Brand, Cart, Wishlist
 from app import db
 
-views = Blueprint('views', __name__)  # Blueprint for views
+views = Blueprint('views', __name__)
 
 @views.route('/')
 def homepage():
@@ -37,20 +37,26 @@ def cart_add(product_id):
 @views.route('/remove_from_cart/<int:cart_id>', methods=['POST'])
 def cart_remove(cart_id):
     cart_entry = Cart.query.get_or_404(cart_id)
-    if cart_entry.quantity > 1:
-        cart_entry.quantity -= 1
-    else:
-        db.session.delete(cart_entry)
+    db.session.delete(cart_entry)
     db.session.commit()
+    return redirect(url_for('views.show_cart'))
+
+@views.route('/update_cart_quantity/<int:cart_id>', methods=['POST'])
+def update_cart_quantity(cart_id):
+    cart_entry = Cart.query.get_or_404(cart_id)
+    new_quantity = request.form.get("quantity", type=int)
+    if new_quantity and new_quantity > 0:
+        cart_entry.quantity = new_quantity
+        db.session.commit()
     return redirect(url_for('views.show_cart'))
 
 @views.route('/cart')
 def show_cart():
     cart_list = Cart.query.all()
-    total_mrp = sum(item.cart_product.price * item.quantity for item in cart_list)
-    discount_mrp = total_mrp * 0.56  # Assuming 56% discount as per the image
-    total_amount = total_mrp - discount_mrp
-
+    total_mrp = int(sum(item.cart_product.current_price * item.quantity for item in cart_list))
+    discount_mrp = int(total_mrp * 0.56)
+    total_amount = int(total_mrp - discount_mrp)
+    
     return render_template(
         'cart.html',
         cart_items=cart_list,
@@ -58,6 +64,10 @@ def show_cart():
         discount_mrp=discount_mrp,
         total_amount=total_amount
     )
+
+@views.route('/checkout')
+def checkout():
+    return render_template('checkout.html')
 
 @views.route('/add_to_wishlist/<int:product_id>', methods=['POST'])
 def wishlist_add(product_id):
@@ -69,36 +79,28 @@ def wishlist_add(product_id):
     db.session.commit()
     return redirect(url_for('views.show_wishlist'))
 
-@views.route('/move_to_wishlist/<int:cart_id>', methods=['POST'])
-def move_to_wishlist(cart_id):
-    # Get the cart item
-    cart_item = Cart.query.get_or_404(cart_id)
-    
-    # Check if the product is already in the wishlist
-    wishlist_item = Wishlist.query.filter_by(product_id=cart_item.product_id).first()
-    
-    if not wishlist_item:
-        # Add the product to the wishlist
-        new_wishlist_item = Wishlist(product_id=cart_item.product_id)
-        db.session.add(new_wishlist_item)
-    
-    # Remove the product from the cart
-    db.session.delete(cart_item)
-    db.session.commit()
-    
-    return redirect(url_for('views.show_cart'))
-
 @views.route('/remove_from_wishlist/<int:wishlist_id>', methods=['POST'])
-def wishlist_remove(wishlist_id):
+def remove_from_wishlist(wishlist_id):
     wishlist_entry = Wishlist.query.get_or_404(wishlist_id)
     db.session.delete(wishlist_entry)
     db.session.commit()
     return redirect(url_for('views.show_wishlist'))
 
+@views.route('/move_to_wishlist/<int:cart_id>', methods=['POST'])
+def move_to_wishlist(cart_id):
+    cart_item = Cart.query.get_or_404(cart_id)
+    wishlist_item = Wishlist.query.filter_by(product_id=cart_item.product_id).first()
+    if not wishlist_item:
+        new_wishlist_item = Wishlist(product_id=cart_item.product_id)
+        db.session.add(new_wishlist_item)
+    db.session.delete(cart_item)
+    db.session.commit()
+    return redirect(url_for('views.show_cart'))
+
 @views.route('/wishlist')
 def show_wishlist():
     wishlist_list = (
-        db.session.query(Wishlist.id, Product.name, Product.price, Product.image_file, Product.id.label("product_id"))
+        db.session.query(Wishlist.id, Product.product_name, Product.current_price, Product.product_picture, Product.id.label("product_id"))
         .join(Product, Wishlist.product_id == Product.id)
         .all()
     )

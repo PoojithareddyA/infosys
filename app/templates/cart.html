@@ -1,64 +1,66 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<div class="container mt-4">
-    <h4 class="mb-3"> 🛒  <strong>{{ cart_items|length }}/{{ cart_items|length }} ITEMS SELECTED</strong></h4>
-
-    <div class="row">
-        <!-- Left Side: Cart Items -->
-        <div class="col-md-8">
-            {% for item in cart_items %}
-            <div class="card mb-3 p-3 shadow-sm">
-                <div class="row g-0">
-                    <div class="col-md-3">
-                        <img src="{{ url_for('static', filename=item.image_file) }}" class="card-img-top fixed-image" alt="{{ item.name }}">
-                    </div>
-                    <div class="col-md-9">
-                        <div class="card-body">
-                            <h6 class="card-title text-truncate">{{ item.name }}</h6>
-                            <p class="card-text">Sold by: <strong>Brand Name</strong></p>
-                            <div class="d-flex">
-                                <label class="me-2">Size:</label>
-                                <select class="form-select form-select-sm me-3" style="width: auto;">
-                                    <option {% if item.size=='S' %}selected{% endif %}>S</option>
-                                    <option {% if item.size=='M' %}selected{% endif %}>M</option>
-                                    <option {% if item.size=='L' %}selected{% endif %}>L</option>
-                                    <option {% if item.size=='XL' %}selected{% endif %}>XL</option>
-                                </select>
-
-                                <label class="me-2">Qty:</label>
-                                <select class="form-select form-select-sm" style="width: auto;">
-                                    {% for i in range(1, 6) %}
-                                    <option {% if item.quantity==i %}selected{% endif %}>{{ i }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <p class="fw-bold text-danger">Rs.{{ item.price }}</p> 
-                                  
-                        
-                            </p>
-                            
-
-                            <button class="btn btn-outline-danger btn-sm">Remove</button>
-                            <button class="btn btn-outline-dark btn-sm">Move to Wishlist</button>
+<div class="container mt-5">
+    <h2 class="fw-bold">My <span class="text-primary">Shopping Cart</span> ({{ cart_items|length }} items)</h2>
+    
+    {% if cart_items %}
+    <div class="row mt-4">
+        <div class="col-lg-8">
+            <div class="list-group">
+                {% for item in cart_items %}
+                <div class="list-group-item d-flex align-items-center shadow-sm mb-3 rounded">
+                    <img src="{{ url_for('static', filename=item.cart_product.product_picture) }}" class="cart-img me-3" alt="{{ item.cart_product.product_name }}">
+                    <div class="flex-grow-1">
+                        <h5 class="mb-1">{{ item.cart_product.product_name }}</h5>
+                        <p class="mb-1 text-muted">Rs.{{ item.cart_product.current_price }}</p>
+                        <div class="d-flex align-items-center">
+                            <form action="{{ url_for('views.cart_remove', cart_id=item.id) }}" method="post" class="me-2">
+                                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                            </form>
+                            <form action="{{ url_for('views.move_to_wishlist', cart_id=item.id) }}" method="post">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">Move to Wishlist</button>
+                            </form>
                         </div>
                     </div>
+                    <div class="ms-3">
+                        <input type="number" class="form-control" value="{{ item.quantity }}" min="1" onchange="updateQuantity({{ item.id }}, this.value)">
+                    </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
-
-        <!-- Right Side: Price Summary -->
-        <div class="col-md-4">
-            <div class="card p-3 shadow-sm">
-                <h5 class="mb-3">PRICE DETAILS ({{ cart_items|length }} Items)</h5>
-                <p class="d-flex justify-content-between"><span>Total MRP</span> <span>₹{{ total_mrp }}</span></p>
-                <p class="d-flex justify-content-between text-success"><span>Discount</span> <span>-₹{{ total_discount }}</span></p>
-                <p class="d-flex justify-content-between"><span>Shipping Fee</span> <span class="text-success">FREE</span></p>
+        <div class="col-lg-4">
+            <div class="card shadow-sm p-3">
+                <h4 class="fw-bold">Order Summary</h4>
                 <hr>
-                <h5 class="d-flex justify-content-between"><strong>Total</strong> <strong>₹{{ final_price }}</strong></h5>
-                <button class="btn btn-danger btn-lg mt-3 w-100">Place Order</button>
+                <p>Total MRP: <strong>Rs.{{ total_mrp }}</strong></p>
+                <p>Discount: <strong>Rs.{{ discount_mrp }}</strong></p>
+                <p><strong>Final Amount: Rs.{{ total_amount }}</strong></p>
+                <a href="{{ url_for('views.checkout') }}" class="btn btn-primary w-100">Proceed to Checkout</a>
             </div>
         </div>
     </div>
+    {% else %}
+    <div class="text-center mt-5">
+        <h4>Your cart is empty 🛒</h4>
+        <a href="{{ url_for('views.homepage') }}" class="btn btn-primary mt-3">Continue Shopping</a>
+    </div>
+    {% endif %}
 </div>
+
+
+
+<style>
+    .cart-img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    .card {
+        border-radius: 10px;
+    }
+</style>
+
 {% endblock %}
