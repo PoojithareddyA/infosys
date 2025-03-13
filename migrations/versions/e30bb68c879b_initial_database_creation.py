@@ -1,8 +1,8 @@
-"""Ensuring product_name column exists
+"""Initial database creation
 
-Revision ID: e5b4ff583506
+Revision ID: e30bb68c879b
 Revises: 
-Create Date: 2025-03-09 22:50:26.431421
+Create Date: 2025-03-13 00:54:38.231501
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'e5b4ff583506'
+revision = 'e30bb68c879b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,16 +25,37 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
     )
+    op.create_table('user',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('username', sa.String(length=100), nullable=False),
+    sa.Column('email', sa.String(length=120), nullable=False),
+    sa.Column('password', sa.String(length=255), nullable=False),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('email'),
+    sa.UniqueConstraint('username')
+    )
+    op.create_table('address',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=100), nullable=False),
+    sa.Column('phone', sa.String(length=20), nullable=False),
+    sa.Column('address_line', sa.Text(), nullable=False),
+    sa.Column('city', sa.String(length=50), nullable=False),
+    sa.Column('state', sa.String(length=50), nullable=False),
+    sa.Column('pincode', sa.String(length=10), nullable=False),
+    sa.Column('is_default', sa.Boolean(), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('product',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('product_name', sa.String(length=100), nullable=False),
     sa.Column('current_price', sa.Float(), nullable=False),
+    sa.Column('old_price', sa.Float(), nullable=False),
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('product_picture', sa.String(length=200), nullable=False),
-    sa.Column('old_price', sa.Float(), nullable=False),
     sa.Column('color', sa.String(length=15), nullable=True),
     sa.Column('rating', sa.Integer(), nullable=True),
-    sa.Column('category', sa.String(length=30), nullable=False),
     sa.Column('quantity', sa.Integer(), nullable=True),
     sa.Column('sale', sa.Boolean(), nullable=True),
     sa.Column('size_small', sa.Integer(), nullable=True),
@@ -42,6 +63,7 @@ def upgrade():
     sa.Column('size_large', sa.Integer(), nullable=True),
     sa.Column('stock', sa.Integer(), nullable=True),
     sa.Column('brand_id', sa.Integer(), nullable=False),
+    sa.Column('category', sa.String(length=100), nullable=False),
     sa.ForeignKeyConstraint(['brand_id'], ['brand.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -54,9 +76,11 @@ def upgrade():
     )
     op.create_table('wishlist',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('product_id', sa.Integer(), nullable=False),
     sa.Column('quantity', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['product_id'], ['product.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###
@@ -67,5 +91,7 @@ def downgrade():
     op.drop_table('wishlist')
     op.drop_table('cart')
     op.drop_table('product')
+    op.drop_table('address')
+    op.drop_table('user')
     op.drop_table('brand')
     # ### end Alembic commands ###

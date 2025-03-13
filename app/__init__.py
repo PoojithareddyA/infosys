@@ -7,20 +7,19 @@ db = SQLAlchemy()
 migrate = Migrate()
 
 def create_app():
-    app = Flask(__name__, static_folder='static')  # ✅ Added static_folder
+    app = Flask(__name__, static_folder='static')
     app.config['SECRET_KEY'] = 'your_secret_key'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-    
+
     # Initialize database and migrations
     db.init_app(app)
+    migrate.init_app(app, db)
 
     with app.app_context():
-        # Import models after initializing db
-        from app import models  
-        migrate.init_app(app, db)
+        from app import models  # Import models after initializing db
 
-    # Import and register Blueprints after app is created
-    from app.views import views  
-    app.register_blueprint(views)
+        # ✅ Import and register Blueprints AFTER app creation
+        from app.views import views  
+        app.register_blueprint(views)
 
     return app
