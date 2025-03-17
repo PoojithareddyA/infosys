@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="responsive-slider">
+    <div class="slider-container">
+        <div class="slider-track">
+            <div class="slide">   
+                <img src="{{ url_for('static', filename='images/slaider img1.png') }}" alt="Slider Image">
+            </div>
+            <div class="slide">
+                <img src="{{ url_for('static', filename='images/slaider img2.png') }}" alt="Slider Image">
+            </div>
+            <div class="slide">
+                <img src="{{ url_for('static', filename='images/slaider img4.png') }}" alt="Slider Image">
+            </div>
+        </div>
+    </div>
+    <button class="arrow-btn prev-btn" aria-label="Previous slide">◀</button>
+    <button class="arrow-btn next-btn" aria-label="Next slide">▶</button>
+    <div class="slider-controls"></div>
+</section>    
+
+<h2 class="mb-2">All Brands</h2>
+<div class="brand-container">
+    {% for brand in brands %}
+    <div class="card">
+        <div class="brand-card img card mb-4 shadow-sm">
+            <img src="{{ url_for('static', filename=brand.logo) }}" class="card-img-top" alt="{{ brand.name }}">
+        </div>
+        <div class="card-content">
+            <h5 class="card-title">{{ brand.name }}</h5>
+            <div class="offer-text">Up to 60% Off</div>
+            <a href="{{ url_for('views.brand_info', brand_id=brand.id) }}" class="view-btn">View Details</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+  
+<style>
+    .brand-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center; /* Adjust alignment */
+        gap: 20px; /* Adds spacing between cards */
+    }
+    .brand-card {
+        width: 230px; /* Consistent card width */
+        background: #fff;
+        text-align: center;
+    }.brand-card img {
+    width: 100%; /* Ensures the image takes full width of the card */
+    height: 150px; /* Set a fixed height */
+    object-fit: contain; /* Ensures the image maintains aspect ratio */
+}
+
+    
+
+</style>
+{% endblock %}
