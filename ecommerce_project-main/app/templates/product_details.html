@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.product_name }} - Product Details{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-6 text-center">
+            <img src="{{ url_for('static', filename=product.product_picture) }}" class="img-fluid" alt="{{ product.product_name }}">
+        </div>
+        <div class="col-md-6">
+            <h2>{{ product.product_name }}</h2>
+            <p>{{ product.description }}</p>
+            <p class="text-danger fw-bold">
+                <span class="text-muted small"><s>₹{{ product.old_price }}</s></span> ₹{{ product.current_price }}
+            </p>
+            <p><strong>Category:</strong> {{ product.category }}</p>
+            <p><strong>Color:</strong> {{ product.color }}</p>
+            <p><strong>Stock:</strong> {{ product.stock }}</p>
+
+            <!-- Add to Cart Form -->
+            <form action="{{ url_for('views.cart_add', product_id=product.id) }}" method="POST">
+                <button type="submit" class="btn btn-success">Add to Cart</button>
+            </form>
+
+            <!-- Add to Wishlist Form -->
+            <form action="{{ url_for('views.wishlist_add', product_id=product.id) }}" method="POST">
+                <button type="submit" class="btn btn-outline-danger mt-2">❤️ Add to Wishlist</button>
+            </form>
+
+            <!-- Back Button -->
+            <a href="{{ url_for('views.brand_info', brand_id=product.brand_id) }}" class="btn btn-secondary mt-3">Back to Brand</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
