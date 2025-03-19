@@ -1,104 +1,177 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}Checkout{% endblock %}
+{% block heads %}
+<link rel="stylesheet" href="{{ url_for('static', filename = 'css/checkout.css') }}">
+{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <h3>Select Delivery Address</h3>
-    <div class="card p-3">
-        {% for address in addresses %}
-        <div class="address-card p-3 border rounded mb-3">
-            <input type="radio" name="selected_address" value="{{ address.id }}">
-            <strong>{{ address.name }}</strong> 
-            <span class="badge bg-success">HOME</span>
-            <p>{{ address.street }}, {{ address.city }}, {{ address.state }} - {{ address.pincode }}</p>
-            <p><strong>Mobile:</strong> {{ address.mobile }}</p>
-            <button class="btn btn-danger btn-sm remove-address" data-id="{{ address.id }}">Remove</button>
-            <button class="btn btn-primary btn-sm edit-address" data-id="{{ address.id }}">Edit</button>
+<div class="checkout-container">
+    <div class="checkout-form">
+        <h2>
+            Delivery Address
+            <button class="edit-btn" onclick="toggleAddressForm()">change Address</button>
+        </h2>
+
+        <div class="address-display" id="addressDisplay">
+            <strong>{{ current_user.firstname }} {{ current_user.lastname }}</strong><br>
+            {{ current_user.address_line_1}}<br>
+            {{ current_user.city}}<br>
+            {{ current_user.state}}<br>
+            Pincode: {{ current_user.pincode }}<br>
+            Email: {{ current_user.email }}
+        </div>
+
+        <div class="address-form" id="addressForm" style="display: none;">
+            <form id="addressUpdateForm">
+                <div class="form-group">
+                    <label for="firstname">First Name</label>
+                    <input type="text" name="firstname" value="{{ current_user.firstname }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastname">Last Name</label>
+                    <input type="text" name="lastname" value="{{ current_user.lastname }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="address_line_1">Address Line 1</label>
+                    <input type="text" name="address_line_1" value="{{ current_user.address_line_1 }}" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" name="city" value="{{ current_user.city }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="state">State</label>
+                        <input type="text" name="state" value="{{ current_user.state }}" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="pincode">Pincode</label>
+                    <input type="text" name="pincode" value="{{ current_user.pincode }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" value="{{ current_user.email }}" required>
+                </div>
+
+
+            </form>
+
+        </div>
+        <button type="button" class="submit-btn" onclick="confirmAddress()">Confirm</button>
+
+        <h2>Payment Method</h2>
+        <div class="payment-method">
+            <div class="payment-method-header">
+                <span>💵 Cash on Delivery</span>
+            </div>
+            <p style="margin-top: 10px; color: #666;">
+                Pay with cash when your order is delivered to your doorstep.
+            </p>
+        </div>
+
+        <!-- Button to Place Order (This will actually save to the database) -->
+
+        <button class="btn btn-success" id="placeOrderBtn" style="display: none;" onclick="placeOrder()">Place Order</button>
+    </div>
+
+    <div class="order-summary">
+        <h2>Order Summary</h2>
+        {% for item in cart_items %}
+        <div class="order-item">
+            <span>{{ item.name }}</span>
+            <span>₹{{ item.price }}</span>
         </div>
         {% endfor %}
-        <button class="btn btn-outline-primary" id="addAddress">+ Add New Address</button>
-    </div>
-    
-    <div class="text-end mt-3">
-        <button class="btn btn-danger">Continue</button>
-    </div>
-</div>
-
-<!-- Add/Edit Address Modal -->
-<div id="addressModal" class="modal fade" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add/Edit Address</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="order-total">
+            <div class="total-row">
+                <span>Subtotal</span>
+                <span>₹{{ subtotal }}</span>
             </div>
-            <div class="modal-body">
-                <form id="addressForm">
-                    <input type="hidden" id="addressId">
-                    <div class="mb-2">
-                        <label>Name</label>
-                        <input type="text" id="name" class="form-control" required>
-                    </div>
-                    <div class="mb-2">
-                        <label>Mobile</label>
-                        <input type="text" id="mobile" class="form-control" required>
-                    </div>
-                    <div class="mb-2">
-                        <label>Street</label>
-                        <input type="text" id="street" class="form-control" required>
-                    </div>
-                    <div class="mb-2">
-                        <label>City</label>
-                        <input type="text" id="city" class="form-control" required>
-                    </div>
-                    <div class="mb-2">
-                        <label>State</label>
-                        <input type="text" id="state" class="form-control" required>
-                    </div>
-                    <div class="mb-2">
-                        <label>Pincode</label>
-                        <input type="text" id="pincode" class="form-control" required>
-                    </div>
-                    <button type="submit" class="btn btn-success">Save</button>
-                </form>
+            <div class="total-row">
+                <span>Shipping</span>
+                <span>₹{{ shipping }}</span>
+            </div>
+            <div class="total-row">
+                <span>Tax</span>
+                <span>₹{{ tax }}</span>
+            </div>
+            <div class="total-row final">
+                <span>Total</span>
+                <span>₹{{ total }}</span>
+
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    document.getElementById("addAddress").addEventListener("click", function() {
-        document.getElementById("addressForm").reset();
-        document.getElementById("addressId").value = "";
-        var modal = new bootstrap.Modal(document.getElementById('addressModal'));
-        modal.show();
-    });
+    // Toggle between displaying the address and address form
+    function toggleAddressForm() {
+        const addressForm = document.getElementById('addressForm');
+        const addressDisplay = document.getElementById('addressDisplay');
 
-    document.querySelectorAll(".edit-address").forEach(btn => {
-        btn.addEventListener("click", function() {
-            let id = this.getAttribute("data-id");
-            fetch(`/get_address/${id}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("addressId").value = data.id;
-                    document.getElementById("name").value = data.name;
-                    document.getElementById("mobile").value = data.mobile;
-                    document.getElementById("street").value = data.street;
-                    document.getElementById("city").value = data.city;
-                    document.getElementById("state").value = data.state;
-                    document.getElementById("pincode").value = data.pincode;
-                    var modal = new bootstrap.Modal(document.getElementById('addressModal'));
-                    modal.show();
-                });
-        });
-    });
-    
-    document.querySelectorAll(".remove-address").forEach(btn => {
-        btn.addEventListener("click", function() {
-            let id = this.getAttribute("data-id");
-            if (confirm("Are you sure you want to remove this address?")) {
-                fetch(`/remove_address/${id}`, { method: "DELETE" })
-                    .then(response => location.reload());
+        if (addressForm.style.display === 'none') {
+            addressForm.style.display = 'block';
+            addressDisplay.style.display = 'none';
+        } else {
+            addressForm.style.display = 'none';
+            addressDisplay.style.display = 'block';
+        }
+    }
+
+    // Update the displayed address after clicking 'Confirm'
+    function confirmAddress() {
+        const form = document.getElementById('addressUpdateForm');
+        const formData = new FormData(form);
+
+        // Extract values from the form
+        const firstname = formData.get('firstname');
+        const lastname = formData.get('lastname');
+        const address_line_1 = formData.get('address_line_1');
+        const city = formData.get('city');
+        const state = formData.get('state');
+        const pincode = formData.get('pincode');
+        const email = formData.get('email');
+
+        // Update the frontend display
+        document.getElementById('addressDisplay').innerHTML = `
+            <strong>${firstname} ${lastname}</strong><br>
+            ${address_line_1}<br>
+            ${city}<br>
+            ${state}<br>
+            Pincode: ${pincode}<br>
+            Email: ${email}
+        `;
+
+        // Hide the address form and show the "Place Order" button
+        document.getElementById('addressForm').style.display = 'none';
+        document.getElementById('addressDisplay').style.display = 'block';
+        document.getElementById('placeOrderBtn').style.display = 'block';
+    }
+
+    // Place the order after clicking "Place Order" (save to DB)
+    function placeOrder() {
+        // Send data to the backend to save the order
+        const form = document.getElementById('addressUpdateForm');
+        const formData = new FormData(form);
+
+        fetch("/place_order", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Order placed successfully!');
+                window.location.href = '/my_orders'; // Redirect to 'My Orders' page
+            } else {
+                alert('Something went wrong. Please try again.');
             }
-        });
-    });
+        })
+        .catch(error => console.error('Error placing order:', error));
+    }
 </script>
 {% endblock %}
+

@@ -8,23 +8,23 @@
     <div class="row mt-4">
         <div class="col-lg-8">
             <div class="list-group">
-                {% for item in cart_items %}
+                {% for product_id, item in cart_items.items() %}
                 <div class="list-group-item d-flex align-items-center shadow-sm mb-3 rounded">
-                    <img src="{{ url_for('static', filename=item.cart_product.product_picture) }}" class="cart-img me-3" alt="{{ item.cart_product.product_name }}">
+                    <img src="{{ url_for('static', filename=item.image) }}" class="cart-img me-3" alt="{{ item.product_name }}">
                     <div class="flex-grow-1">
-                        <h5 class="mb-1">{{ item.cart_product.product_name }}</h5>
-                        <p class="mb-1 text-muted">Rs.<span class="item-price" data-price="{{ item.cart_product.current_price }}">{{ item.cart_product.current_price }}</span></p>
+                        <h5 class="mb-1">{{ item.product_name }}</h5>
+                        <p class="mb-1 text-muted">Rs.<span class="item-price" data-price="{{ item.price }}">{{ item.price }}</span></p>
                         <div class="d-flex align-items-center">
-                            <form action="{{ url_for('views.cart_remove', cart_id=item.id) }}" method="post" class="me-2">
+                            <form action="{{ url_for('views.cart_remove', product_id=product_id) }}" method="post" class="me-2">
                                 <button type="submit" class="btn btn-danger btn-sm">Remove</button>
                             </form>
-                            <form action="{{ url_for('views.move_to_wishlist', cart_id=item.id) }}" method="post">
+                            <form action="{{ url_for('views.remove_from_wishlist', product_id=product_id) }}" method="post">
                                 <button type="submit" class="btn btn-outline-secondary btn-sm">Move to Wishlist</button>
                             </form>
                         </div>
                     </div>
                     <div class="ms-3">
-                        <input type="number" class="form-control quantity-input" value="{{ item.quantity }}" min="1" data-cart-id="{{ item.id }}">
+                        <input type="number" class="form-control quantity-input" value="{{ item.quantity }}" min="1" data-product-id="{{ product_id }}">
                     </div>
                 </div>
                 {% endfor %}
@@ -64,10 +64,10 @@
 <script>
 document.querySelectorAll(".quantity-input").forEach(input => {
     input.addEventListener("change", function() {
-        let cartId = this.getAttribute("data-cart-id");
+        let productId = this.getAttribute("data-product-id");
         let newQuantity = this.value;
         
-        fetch(`/update_cart_quantity/${cartId}`, {
+        fetch(`/update_cart_quantity/${productId}`, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: `quantity=${newQuantity}`
@@ -83,3 +83,4 @@ document.querySelectorAll(".quantity-input").forEach(input => {
 </script>
 
 {% endblock %}
+

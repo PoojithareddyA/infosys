@@ -11,14 +11,15 @@
         <div class="col d-flex justify-content-center">
             <div class="card shadow-sm border-0" style="width: 18rem;">
                 <div class="position-relative">
-                    <img src="{{ url_for('static', filename=item.product_picture) }}" class="card-img-top fixed-image" alt="{{ item.product_name }}">
-                    <button class="btn btn-light position-absolute top-0 end-0 m-2" onclick="removeFromWishlist({{ item.id }})">&times;</button>
+                    <img src="{{ url_for('static', filename=item.wishlist_product.product_picture) }}" class="card-img-top fixed-image" alt="{{ item.wishlist_product.product_name }}">
+                    <button class="btn btn-light position-absolute top-0 end-0 m-2" onclick="removeFromWishlist({{ item.wishlist_product.id }})">&times;</button>
                 </div>
                 <div class="card-body text-center d-flex flex-column gap-2">
-                    <h6 class="card-title text-truncate">{{ item.product_name }}</h6>
-                    <p style="background-color: #C4877A; color: white;">Rs.{{ item.current_price }}</p>
-                    <a href="{{ url_for('views.product_info', product_id=item.product_id) }}" class="btn btn-outline-dark btn-sm w-100">View Details</a>
-                    <form action="{{ url_for('views.cart_add', product_id=item.product_id) }}" method="post" class="d-inline w-100">
+                    <h6 class="card-title text-truncate">{{ item.wishlist_product.product_name }}</h6>
+                    <p style="background-color: #C4877A; color: white;">Rs.{{ item.wishlist_product.current_price }}</p>
+                    <a href="{{ url_for('views.product_info', product_id=item.wishlist_product.id) }}" class="btn btn-outline-dark btn-sm w-100">View Details</a>
+                    <form action="{{ url_for('views.cart_add', product_id=item.wishlist_product.id) }}" method="post" class="d-inline w-100">
+                        <input type="hidden" name="quantity" value="1">
                         <button type="submit" class="btn btn-sm w-100" style="background-color: #C4877A; color: white;">Move to Bag</button>
                     </form>
                 </div>
@@ -29,10 +30,16 @@
 </div>
 
 <script>
-    function removeFromWishlist(wishlistId) {
-        fetch("{{ url_for('views.remove_from_wishlist', wishlist_id=0) }}".replace('0', wishlistId), {
+    function removeFromWishlist(productId) {
+        fetch(`/remove_from_wishlist/${productId}`, {
             method: 'POST',
-        }).then(() => window.location.reload());
+        }).then(response => {
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert('Failed to remove item from wishlist.');
+            }
+        });
     }
 </script>
 

@@ -18,18 +18,16 @@
             <p><strong>Color:</strong> {{ product.color }}</p>
             <p><strong>Stock:</strong> {{ product.stock }}</p>
 
-            <!-- Add to Cart Form -->
-            <form action="{{ url_for('views.cart_add', product_id=product.id) }}" method="POST">
-                <button type="submit" class="btn btn-success">Add to Cart</button>
-            </form>
 
-            <!-- Add to Wishlist Form -->
+          
+
+            <!-- ❤️ Add to Wishlist Form -->
             <form action="{{ url_for('views.wishlist_add', product_id=product.id) }}" method="POST">
                 <button type="submit" class="btn btn-outline-danger mt-2">❤️ Add to Wishlist</button>
             </form>
 
-            <!-- Back Button -->
-            <a href="{{ url_for('views.brand_info', brand_id=product.brand_id) }}" class="btn btn-secondary mt-3">Back to Brand</a>
+            <!-- 🔙 Back Button -->
+            <a href="{{ url_for('views.brand_info', brand_id=product.brand_id) }}" class="btn btn-secondary mt-3">🔙 Back to Brand</a>
         </div>
     </div>
 </div>
