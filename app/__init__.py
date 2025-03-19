@@ -33,7 +33,9 @@
 from flask import Flask
 from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
+# Initialize db and mail globally
 db = SQLAlchemy()
 mail = Mail()
 
@@ -45,16 +47,19 @@ def create_app():
     app.config["DEBUG"] = True
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+    # Initialize extensions
+    db.init_app(app)
+    migrate = Migrate(app, db)
     
     # Mail Configuration
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'
     app.config['MAIL_PORT'] = 587
     app.config['MAIL_USE_TLS'] = True
     app.config['MAIL_USERNAME'] = 'vkumar080@rku.ac.in'  # Update with your email
-    app.config['MAIL_PASSWORD'] = 'oqpj npkl jyxh hijh'     # Update with your app password
+    app.config['MAIL_PASSWORD'] = 'oqpj npkl jyxh hijh'  # Update with your app password
     app.config['MAIL_DEFAULT_SENDER'] = 'vkumar080@rku.ac.in'
 
-    db.init_app(app)
     mail.init_app(app)
 
     # Import routes after db initialization to avoid circular imports
@@ -65,9 +70,10 @@ def create_app():
     app.register_blueprint(views)
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin)
+
+    # You may want to handle migrations instead of using `create_all()` in production
     with app.app_context():
-        db.create_all()
+        # db.create_all() can be used for development, but use migrations for production
+        pass
 
     return app
-
-

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="users.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="2769"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="products" custom_title="0" dock_id="4" table="4,8:mainproducts"/><dock_state state="000000ff00000000fd0000000100000002000005bb00000390fc0100000004fb000000160064006f0063006b00420072006f00770073006500310100000000000005bb0000000000000000fb000000160064006f0063006b00420072006f00770073006500320100000000000005bb0000000000000000fb000000160064006f0063006b00420072006f00770073006500330100000000000005bb0000000000000000fb000000160064006f0063006b00420072006f00770073006500340100000000000005bb0000012300ffffff000002690000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="brands" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="111"/><column index="3" value="183"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="products" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="35"/><column index="2" value="91"/><column index="3" value="99"/><column index="4" value="85"/><column index="5" value="92"/><column index="6" value="71"/><column index="7" value="36"/><column index="8" value="42"/><column index="9" value="35"/><column index="10" value="56"/><column index="11" value="40"/><column index="12" value="60"/><column index="13" value="59"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1*">INSERT INTO products (id, product_name, current_price, previous_price, description, product_picture, color, rating, count, sale, category, brand_id) 
+VALUES 
+(1, 'Nike Running Shoes', 120, 150, 'Comfortable running shoes', 'images/nike_shoes.jpg', 'Black', 5, 50, 1, 'Shoes', 1),
+(2, 'Zara Slim Fit Shirt', 55, 70, 'Elegant slim fit shirt', 'images/zara_shirt.jpg', 'Blue', 4, 60, 1, 'Men', 2),
+(3, 'H&amp;M Cotton Dress', 80, 100, 'Stylish cotton dress', 'images/hm_dress.jpg', 'Red', 5, 50, 1, 'Women', 3),
+(4, 'Adidas Sneakers', 90, 120, 'Sporty sneakers', 'images/adidas_sneakers.jpg', 'White', 5, 40, 1, 'Shoes', 4),
+(5, 'Kids Cartoon T-Shirt', 30, 40, 'Cotton T-shirt for kids', 'images/kids_tshirt.jpg', 'Yellow', 4, 100, 1, 'Kids', 5),
+(6, 'Gucci Leather Wallet', 250, 300, 'Premium leather wallet', 'images/gucci_wallet.jpg', 'Brown', 5, 20, 1, 'Accessories', 6),
+(7, 'H&amp;M Casual Shirt', 45, 60, 'Stylish casual shirt for everyday wear', 'images/hm_casual_shirt.jpg', 'White', 4, 50, 1, 'Men', 3),
+(8, 'H&amp;M Women Blazer', 90, 120, 'Elegant women blazer for a formal look', 'images/hm_womens_blazer.jpg', 'Black', 5, 40, 1, 'Women', 3),
+(9, 'H&amp;M Skinny Jeans', 70, 85, 'Comfortable and stylish skinny jeans', 'images/hm_skinny_jeans.jpg', 'Blue', 5, 60, 1, 'Men', 3),
+(10, 'H&amp;M Summer Dress', 55, 75, 'Light and breathable summer dress', 'images/hm_summer_dress.jpg', 'Pink', 4, 50, 1, 'Women', 3),
+(11, 'H&amp;M Kids Hooded Jacket', 40, 55, 'Soft and warm hooded jacket for kids', 'images/hm_kids_hoodie.jpg', 'Red', 5, 70, 1, 'Kids', 3),
+(12, 'H&amp;M MenCotton Shorts', 35, 50, 'Comfortable cotton shorts for casual wear', 'images/hm_cotton_shorts.jpg', 'Khaki', 4, 50, 1, 'Men', 3),
+(13, 'H&amp;M Women Handbag', 85, 110, 'Trendy and spacious handbag', 'images/hm_handbag.jpg', 'Beige', 5, 30, 1, 'Accessories', 3),
+(14, 'H&amp;M Sneakers', 75, 95, 'Stylish and comfortable sneakers', 'images/hm_sneakers.jpg', 'White', 5, 40, 1, 'Shoes', 3),
+(15, 'Nike Running Shoes', 120, 150, 'Comfortable running shoes', 'images/nike_shoes.jpg', 'Black', 5, 50, 1, 'Shoes', 1),
+(16, 'Zara Slim Fit Shirt', 55, 70, 'Elegant slim fit shirt', 'images/zara_shirt.jpg', 'Blue', 4, 60, 1, 'Men', 2),
+(17, 'H&amp;M Cotton Dress', 80, 100, 'Stylish cotton dress', 'images/hm_dress.jpg', 'Red', 5, 50, 1, 'Women', 3),
+(18, 'Adidas Sneakers', 90, 120, 'Sporty sneakers', 'images/adidas_sneakers.jpg', 'White', 5, 40, 1, 'Shoes', 4),
+(19, 'Kids Cartoon T-Shirt', 30, 40, 'Cotton T-shirt for kids', 'images/kids_tshirt.jpg', 'Yellow', 4, 100, 1, 'Kids', 5),
+(20, 'Gucci Leather Wallet', 250, 300, 'Premium leather wallet', 'images/gucci_wallet.jpg', 'Brown', 5, 20, 1, 'Accessories', 6);
+
+
+</sql><current_tab id="0"/></tab_sql></sqlb_project>
